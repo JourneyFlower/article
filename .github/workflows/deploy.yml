@@ -42,7 +42,10 @@ jobs:
       - name: Deploy to Pages
         env:
          TZ: Asia/Shanghai
-        #下面的 JourneyFlower 记得替换成自己的github帐号
+        #下面的 JourneyFlower 记得替换成自己的github帐号 
+        #@github.com/JourneyFlower/article.git 也替换成自己的
+        # secrets.GIT_EMAIL 是 工作流失败之后，需要通知的邮箱，换成自己的，一般写github账号邮箱
+        # secrets.ACCESS_TOKEN 需要自己创建，应用访问token，工作流执行的时候需要
         run: |
          cd .vitepress/dist
          git config --global init.defaultBranch main
@@ -52,5 +55,5 @@ jobs:
          git config user.email "${{ secrets.GIT_EMAIL }}"
          git add .
          git commit -m "Deploying to blog-pages from @ $GITHUB_SHA in $(date +"%Y年%m月%d日 %T %Z")"
-         git push -f https://JourneyFlower:${{ secrets.ACCESS_TOKEN }}@github.com/JourneyFlower/blog.git main:blog-pages
+         git push -f https://JourneyFlower:${{ secrets.ACCESS_TOKEN }}@github.com/JourneyFlower/article.git main:blog-pages
          cd - 
