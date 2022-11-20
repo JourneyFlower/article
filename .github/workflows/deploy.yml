@@ -1,4 +1,4 @@
-#这里的名字就是deploy.yml(工作流)文件的名字 可自定义
+#这里的名字就是deploy.yml(工作流)文件的名字 可自定义 
 name: Deploy
 on:
   #配置当push main分支的时候执行
