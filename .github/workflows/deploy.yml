@@ -1,0 +1,56 @@
+#这里的名字就是deploy.yml(工作流)文件的名字 可自定义
+name: Deploy
+on:
+  #配置当push main分支的时候执行
+  push:
+    branches:
+      - main      
+jobs:
+  #工作流包含一个名为“build”的任务名称 可自定义
+  build-and-deploy:
+    #将会在最新版本的ubuntu系统上执行
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['lts/fermium']
+    #具体的执行步骤
+    steps:
+      #检出main分支
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: 'main'
+          persist-credentials: false
+          fetch-depth: 0
+        env:
+          TZ: Asia/Shanghai
+      #使用的node版本
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@main
+        with:
+          node-version:  ${{ matrix.node }}
+      - name: Install dependencies
+        #run: npm install
+        run: yarn install
+      # - name: npm audit fix
+      #   run: npm audit fix       
+      # - name: Use yarn create vlib
+      #   run: yarn create vlib
+      - name: Build My Blog
+        # run: npm run build
+        run: yarn run build
+      - name: Deploy to Pages
+        env:
+         TZ: Asia/Shanghai
+        #下面的 JourneyFlower 记得替换成自己的github帐号
+        run: |
+         cd .vitepress/dist
+         git config --global init.defaultBranch main
+         git config --global --add safe.directory "*"
+         git init
+         git config user.name "JourneyFlower"
+         git config user.email "${{ secrets.GIT_EMAIL }}"
+         git add .
+         git commit -m "Deploying to blog-pages from @ $GITHUB_SHA in $(date +"%Y年%m月%d日 %T %Z")"
+         git push -f https://JourneyFlower:${{ secrets.ACCESS_TOKEN }}@github.com/JourneyFlower/blog.git main:blog-pages
+         cd - 
